@@ -1,0 +1,4 @@
+[submodule "erc-control-arm"]
+	path = erc-control-arm
+	url = https://github.com/RoboTeamTwente/erc-control-arm/
+	branch = kinematics

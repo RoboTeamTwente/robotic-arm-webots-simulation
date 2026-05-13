@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/my_arm_controller.dir/my_arm_controller.c.o -o my_arm_controller  -Wl,-rpath,/snap/webots/current/usr/share/webots/lib/controller erc-control-arm/libwebots_manual.a /snap/webots/current/usr/share/webots/lib/controller/libController.so -lm 

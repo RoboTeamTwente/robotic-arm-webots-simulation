@@ -1,0 +1,2 @@
+/usr/bin/ar qc libstm_manual.a CMakeFiles/stm_manual.dir/control_arm_manual_ert_rtw/control_arm_manual.c.o
+/usr/bin/ranlib libstm_manual.a

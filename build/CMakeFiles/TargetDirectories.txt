@@ -1,0 +1,8 @@
+/home/rowan/Documents/roboteam/webots_projects/controllers/cydonia_robotic_arm_controller/build/CMakeFiles/my_arm_controller.dir
+/home/rowan/Documents/roboteam/webots_projects/controllers/cydonia_robotic_arm_controller/build/CMakeFiles/edit_cache.dir
+/home/rowan/Documents/roboteam/webots_projects/controllers/cydonia_robotic_arm_controller/build/CMakeFiles/rebuild_cache.dir
+/home/rowan/Documents/roboteam/webots_projects/controllers/cydonia_robotic_arm_controller/build/erc-control-arm/CMakeFiles/stm_automatic.dir
+/home/rowan/Documents/roboteam/webots_projects/controllers/cydonia_robotic_arm_controller/build/erc-control-arm/CMakeFiles/stm_manual.dir
+/home/rowan/Documents/roboteam/webots_projects/controllers/cydonia_robotic_arm_controller/build/erc-control-arm/CMakeFiles/webots_manual.dir
+/home/rowan/Documents/roboteam/webots_projects/controllers/cydonia_robotic_arm_controller/build/erc-control-arm/CMakeFiles/edit_cache.dir
+/home/rowan/Documents/roboteam/webots_projects/controllers/cydonia_robotic_arm_controller/build/erc-control-arm/CMakeFiles/rebuild_cache.dir

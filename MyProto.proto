@@ -1,0 +1,496 @@
+#VRML_SIM R2025a utf8
+# Describe the functionality of your PROTO here.
+
+
+PROTO MyProto [
+  field SFVec3f translation 0 0 0.09
+  field SFRotation rotation 0 0 1 1.57
+  field SFString name "robot"
+  field SFString controller "<generic>"
+]
+{
+Robot {
+  translation IS translation
+  rotation IS rotation
+  name IS name
+  controller IS controller
+  children [
+    DEF base Shape {
+      appearance BrushedAluminium {
+      }
+      geometry Cylinder {
+        height 0.18
+        radius 0.15
+      }
+    }
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        axis 0 0 1
+      }
+      device [
+        RotationalMotor {
+          name "base_rotation_motor"
+          maxTorque 10000
+        }
+        PositionSensor {
+          name "base_rotation_sensor"
+        }
+      ]
+      endPoint DEF base_rotation Solid {
+        translation 0 0 0.1
+        children [
+          DEF base_right Solid {
+            translation -0.05 0 0.055
+            children [
+              HingeJoint {
+                jointParameters HingeJointParameters {
+                }
+                device [
+                  RotationalMotor {
+                    name "bottom_sandwich_motor"
+                    maxTorque 100
+                  }
+                  PositionSensor {
+                    name "bottom_sandwich_sensor"
+                  }
+                ]
+                endPoint DEF bottom_sandwich Solid {
+                  rotation 1 0 0 0
+                  children [
+                    HingeJoint {
+                      jointParameters HingeJointParameters {
+                        anchor 0 0 0.35
+                      }
+                      endPoint Solid {
+                        rotation 1 0 0 0
+                        name "bottom_sandwich_top"
+                        physics Physics {
+                        }
+                      }
+                    }
+                    DEF bottom_sandwich_bottom Solid {
+                      translation 0.051 0 0
+                      rotation 0 1 0 1.5707996938995747
+                      children [
+                        Shape {
+                          appearance BrushedAluminium {
+                          }
+                          geometry Cylinder {
+                            height 0.125
+                            radius 0.02
+                          }
+                        }
+                      ]
+                      boundingObject Cylinder {
+                        height 0.125
+                        radius 0.02
+                      }
+                      physics Physics {
+                      }
+                    }
+                    DEF bottom_sandwich_left Solid {
+                      translation 0.0775 0 0
+                      rotation 1 0 0 -1.5708003061004252
+                      children [
+                        Shape {
+                          appearance BrushedAluminium {
+                          }
+                          geometry Mesh {
+                            url [
+                              "../libraries/robotic_arm_model/RA_bottom_sandwich_left.obj"
+                            ]
+                          }
+                        }
+                      ]
+                      name "solid(3)"
+                      boundingObject Mesh {
+                        url [
+                          "../libraries/robotic_arm_model/RA_bottom_sandwich_left.obj"
+                        ]
+                      }
+                      physics Physics {
+                        density 2700
+                      }
+                    }
+                    DEF bottom_sandwich_right Solid {
+                      translation 0.02 0 0
+                      rotation 1 0 0 -1.5707996938995747
+                      children [
+                        Shape {
+                          appearance BrushedAluminium {
+                          }
+                          geometry Mesh {
+                            url [
+                              "../libraries/robotic_arm_model/RA_bottom_sandwich_right.obj"
+                            ]
+                          }
+                        }
+                      ]
+                      name "solid(2)"
+                      boundingObject Mesh {
+                        url [
+                          "../libraries/robotic_arm_model/RA_bottom_sandwich_right.obj"
+                        ]
+                      }
+                      physics Physics {
+                        density 2700
+                      }
+                    }
+                  ]
+                  name "solid(2)"
+                  physics Physics {
+                  }
+                }
+              }
+              DEF right_base_plate Shape {
+                appearance BrushedAluminium {
+                }
+                geometry Mesh {
+                  url [
+                    "../libraries/robotic_arm_model/RA_base_plate_right.obj"
+                  ]
+                }
+              }
+            ]
+            name "solid(1)"
+            boundingObject Mesh {
+              url [
+                "../libraries/robotic_arm_model/RA_base_plate_right.obj"
+              ]
+            }
+            physics Physics {
+              density 2700
+            }
+          }
+          DEF base_left Solid {
+            translation 0.06 -0.0025 0.14
+            children [
+              Solid {
+                translation -0.01 0 0
+                rotation 0 1 0 1.5707996938995747
+                children [
+                  Shape {
+                    appearance BrushedAluminium {
+                    }
+                    geometry Cylinder {
+                      height 0.03
+                      radius 0.01
+                    }
+                  }
+                ]
+              }
+              HingeJoint {
+                jointParameters HingeJointParameters {
+                }
+                device [
+                  RotationalMotor {
+                    name "short_linkage_motor"
+                    maxTorque 100
+                  }
+                  PositionSensor {
+                    name "short_linkage_sensor"
+                  }
+                ]
+                endPoint DEF short_linkage Solid {
+                  translation -0.019999999999999987 0 0
+                  rotation 1 0 0 0
+                  children [
+                    Solid {
+                      translation -0.015 0.12 -4.67812e-14
+                      rotation 0 1 0 1.5707996938995747
+                      children [
+                        Shape {
+                          appearance BrushedAluminium {
+                          }
+                          geometry Cylinder {
+                            height 0.04
+                            radius 0.01
+                          }
+                        }
+                      ]
+                      name "solid(1)"
+                    }
+                    HingeJoint {
+                      jointParameters HingeJointParameters {
+                        anchor -0.03 0.12 0
+                      }
+                      endPoint DEF big_linkage Solid {
+                        translation -0.03 0.12 0
+                        rotation -1 0 0 1.570799693899574
+                        children [
+                          Solid {
+                            translation -0.009 -0.28 0
+                            rotation 0 1 0 1.5707996938995747
+                            children [
+                              Shape {
+                                appearance BrushedAluminium {
+                                }
+                                geometry Cylinder {
+                                  height 0.09
+                                  radius 0.02
+                                }
+                              }
+                            ]
+                            name "solid(1)"
+                          }
+                          HingeJoint {
+                            jointParameters HingeJointParameters {
+                              anchor -0.05 -0.28 0
+                            }
+                            endPoint DEF top_sandwich Solid {
+                              translation -0.05 -0.28 0
+                              rotation 1 0 0 1.7016996938995743
+                              children [
+                                Solid {
+                                  translation 0.041 -0.62 -1.68355e-07
+                                  rotation 0 1 0 1.5707996938995747
+                                  children [
+                                    Shape {
+                                      appearance BrushedAluminium {
+                                      }
+                                      geometry Cylinder {
+                                        height 0.12
+                                        radius 0.005
+                                      }
+                                    }
+                                  ]
+                                  name "solid(4)"
+                                }
+                                Solid {
+                                  translation 0.041 -0.12 -1.68355e-07
+                                  rotation 0 1 0 1.5707996938995747
+                                  children [
+                                    Shape {
+                                      appearance BrushedAluminium {
+                                      }
+                                      geometry Cylinder {
+                                        height 0.09
+                                        radius 0.02
+                                      }
+                                    }
+                                  ]
+                                  name "solid(3)"
+                                }
+                                HingeJoint {
+                                  jointParameters HingeJointParameters {
+                                    anchor -0.01 -0.118 0
+                                  }
+                                  endPoint SolidReference {
+                                    solidName "bottom_sandwich_top"
+                                  }
+                                }
+                                HingeJoint {
+                                  jointParameters HingeJointParameters {
+                                    anchor 0 -0.618 0
+                                  }
+                                  device [
+                                    RotationalMotor {
+                                      name "gripper_pitch_motor"
+                                      maxTorque 100
+                                    }
+                                    PositionSensor {
+                                      name "gripper_pitch_sensor"
+                                    }
+                                  ]
+                                  endPoint DEF gripper_base Solid {
+                                    translation 0.04 -0.618 0
+                                    rotation 0 1 0 1.5707996938995745
+                                    children [
+                                      DEF gripper_base Shape {
+                                        appearance BrushedAluminium {
+                                        }
+                                        geometry Mesh {
+                                          url [
+                                            "../libraries/robotic_arm_model/gripper_base.obj"
+                                          ]
+                                        }
+                                      }
+                                      HingeJoint {
+                                        jointParameters HingeJointParameters {
+                                          axis 0 1 0
+                                        }
+                                        device [
+                                          PositionSensor {
+                                            name "gripper_rotation_sensor"
+                                          }
+                                          RotationalMotor {
+                                            name "gripper_rotation_motor"
+                                            maxTorque 100
+                                          }
+                                        ]
+                                        endPoint DEF gripper_jaws Solid {
+                                          rotation 0 1 0 0
+                                          children [
+                                            Shape {
+                                              appearance BrushedAluminium {
+                                              }
+                                              geometry Mesh {
+                                                url [
+                                                  "../libraries/robotic_arm_model/gripper_jaws.obj"
+                                                ]
+                                              }
+                                            }
+                                          ]
+                                          boundingObject Mesh {
+                                            url [
+                                              "../libraries/robotic_arm_model/gripper_jaws.obj"
+                                            ]
+                                          }
+                                          physics Physics {
+                                          }
+                                        }
+                                      }
+                                    ]
+                                    name "solid(2)"
+                                    boundingObject Mesh {
+                                      url [
+                                        "../libraries/robotic_arm_model/gripper_base.obj"
+                                      ]
+                                    }
+                                    physics Physics {
+                                    }
+                                  }
+                                }
+                                DEF top_sandwich_right Solid {
+                                  children [
+                                    Solid {
+                                      translation 0 -0.12 0
+                                      name "top_sandwich_right_middle"
+                                    }
+                                    DEF top_sandwich_right Shape {
+                                      appearance BrushedAluminium {
+                                      }
+                                      geometry Mesh {
+                                        url [
+                                          "../libraries/robotic_arm_model/RA_top_sandwich_right.obj"
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                  name "solid(1)"
+                                  boundingObject Mesh {
+                                    url [
+                                      "../libraries/robotic_arm_model/RA_top_sandwich_right.obj"
+                                    ]
+                                  }
+                                  physics Physics {
+                                    density 2700
+                                  }
+                                }
+                                DEF top_sandwich_left Solid {
+                                  translation 0.08 0 0
+                                  children [
+                                    Solid {
+                                      translation 0 -0.12 0
+                                      name "top_sandwich_left_middle"
+                                    }
+                                    DEF top_sandwich_left Shape {
+                                      appearance BrushedAluminium {
+                                      }
+                                      geometry Mesh {
+                                        url [
+                                          "../libraries/robotic_arm_model/RA_top_sandwich_left.obj"
+                                        ]
+                                      }
+                                    }
+                                  ]
+                                  boundingObject Mesh {
+                                    url [
+                                      "../libraries/robotic_arm_model/RA_top_sandwich_left.obj"
+                                    ]
+                                  }
+                                  physics Physics {
+                                    density 2700
+                                  }
+                                }
+                              ]
+                              physics Physics {
+                              }
+                            }
+                          }
+                          Shape {
+                            appearance BrushedAluminium {
+                            }
+                            geometry Mesh {
+                              url [
+                                "../libraries/robotic_arm_model/RA_big_linkage.obj"
+                              ]
+                            }
+                          }
+                        ]
+                        boundingObject Mesh {
+                          url [
+                            "../libraries/robotic_arm_model/RA_big_linkage.obj"
+                          ]
+                        }
+                        physics Physics {
+                          density 2700
+                        }
+                      }
+                    }
+                    Shape {
+                      appearance BrushedAluminium {
+                      }
+                      geometry Mesh {
+                        url [
+                          "../libraries/robotic_arm_model/RA_short_linkage.obj"
+                        ]
+                      }
+                    }
+                  ]
+                  name "solid(1)"
+                  boundingObject Mesh {
+                    url [
+                      "../libraries/robotic_arm_model/RA_short_linkage.obj"
+                    ]
+                  }
+                  physics Physics {
+                    density 2700
+                  }
+                }
+              }
+              DEF left_base_plate Shape {
+                appearance BrushedAluminium {
+                }
+                geometry Mesh {
+                  url [
+                    "../libraries/robotic_arm_model/RA_base_plate_left.obj"
+                  ]
+                }
+              }
+            ]
+            boundingObject Mesh {
+              url [
+                "../libraries/robotic_arm_model/RA_base_plate_left.obj"
+              ]
+            }
+            physics Physics {
+            }
+          }
+          DEF base_rotation Shape {
+            appearance BrushedAluminium {
+            }
+            geometry Mesh {
+              url [
+                "../libraries/robotic_arm_model/RA_base_rotation.obj"
+              ]
+            }
+          }
+        ]
+        boundingObject Mesh {
+          url [
+            "../libraries/robotic_arm_model/RA_base_rotation.obj"
+          ]
+        }
+        physics Physics {
+          density 2700
+        }
+      }
+    }
+  ]
+  boundingObject Cylinder {
+    height 0.18
+    radius 0.15
+  }
+}
+}
