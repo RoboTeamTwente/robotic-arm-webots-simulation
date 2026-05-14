@@ -35,6 +35,11 @@ int main(int argc, char **argv){
     WbDeviceTag baseLeftMotor        = wb_robot_get_device("short_linkage_motor");
     WbDeviceTag gripperPitchMotor    = wb_robot_get_device("gripper_pitch_motor");
     WbDeviceTag gripperRotationMotor = wb_robot_get_device("gripper_rotation_motor");
+
+    WbDeviceTag topJawsMotor = wb_robot_get_device("top_jaw_motor");
+    WbDeviceTag bottomJawsMotor = wb_robot_get_device("bottom_jaw_motor");
+    WbDeviceTag leftJawsMotor = wb_robot_get_device("left_jaw_motor");
+    WbDeviceTag rightJawsMotor = wb_robot_get_device("right_jaw_motor");
     printf("initialized motor device tags\n");
 
     //setting tags for 
@@ -55,15 +60,25 @@ int main(int argc, char **argv){
 
     //setting speed to max for fast responses
     wb_motor_set_position(baseRotationMotor,    0);
-    wb_motor_set_velocity(baseRotationMotor,    10);
+    wb_motor_set_velocity(baseRotationMotor,    1);
     wb_motor_set_position(baseRightMotor,       0);
-    wb_motor_set_velocity(baseRightMotor,       10);
+    wb_motor_set_velocity(baseRightMotor,       1);
     wb_motor_set_position(baseLeftMotor,        0);
-    wb_motor_set_velocity(baseLeftMotor,        10);
+    wb_motor_set_velocity(baseLeftMotor,        1);
     wb_motor_set_position(gripperPitchMotor,    0);
-    wb_motor_set_velocity(gripperPitchMotor,    10);
+    wb_motor_set_velocity(gripperPitchMotor,    1);
     wb_motor_set_position(gripperRotationMotor, 0);
-    wb_motor_set_velocity(gripperRotationMotor, 10);
+    wb_motor_set_velocity(gripperRotationMotor, 1);
+
+    wb_motor_set_position(topJawsMotor,    0);
+    wb_motor_set_velocity(topJawsMotor,    1);
+    wb_motor_set_position(bottomJawsMotor, 0);
+    wb_motor_set_velocity(bottomJawsMotor, 1);
+    wb_motor_set_position(leftJawsMotor,   0);
+    wb_motor_set_velocity(leftJawsMotor,   1);
+    wb_motor_set_position(rightJawsMotor,  0);
+    wb_motor_set_velocity(rightJawsMotor,  1);
+
     printf("initialized motor positions\n");
 
     //positioning variables
@@ -81,6 +96,8 @@ int main(int argc, char **argv){
     real_T baseRotationActPos    = 0;
     real_T baseLeftActPos        = 0;
     real_T baseRightActPos       = 0;
+
+    real_T gripperJawsDesPos = 0;
 
     float deltaX = 0.005;
     float deltaY = 0.005;
@@ -122,6 +139,12 @@ int main(int argc, char **argv){
         case WB_KEYBOARD_RIGHT:
             gripperRotationDesPos += 4;
             break;
+        case 82://R
+            gripperJawsDesPos += 0.02;
+            break;
+        case 70://F
+            gripperJawsDesPos -= 0.02;
+            break;
         default:
             break;
         }
@@ -157,7 +180,15 @@ int main(int argc, char **argv){
         wb_motor_set_position(gripperPitchMotor,    rtY.controlGripperPitch);
         wb_motor_set_position(gripperRotationMotor, rtY.controlWristRotation);
 
-        printf("desired position : [%f, %f, %f] actual position : [%f, %f, %f]\n", x, y, z, rtY.actualX, rtY.actualY, rtY.actualZ);
+        printf("angles : %f %f %f %f %f\n", rtY.controlBase, rtY.controlStepperRight, rtY.controlStepperLeft, rtY.controlGripperPitch, rtY.controlWristRotation);
+        printf("test : %f\n", rtY.testProbe);
+
+        wb_motor_set_position(topJawsMotor, gripperJawsDesPos);
+        wb_motor_set_position(bottomJawsMotor, gripperJawsDesPos);
+        wb_motor_set_position(leftJawsMotor, gripperJawsDesPos);
+        wb_motor_set_position(rightJawsMotor, gripperJawsDesPos);
+
+        //printf("desired position : [%f, %f, %f] actual position : [%f, %f, %f]\n", x, y, z, rtY.actualX, rtY.actualY, rtY.actualZ);
     };
 
     /* This is necessary to cleanup webots resources */
