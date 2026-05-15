@@ -1,2 +1,0 @@
-/usr/bin/ar qc libstm_automatic.a CMakeFiles/stm_automatic.dir/control_arm_ert_rtw/control_arm.c.o
-/usr/bin/ranlib libstm_automatic.a

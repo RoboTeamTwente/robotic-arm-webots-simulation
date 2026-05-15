@@ -13,6 +13,7 @@
 #include <webots/position_sensor.h>
 
 #include <webots/keyboard.h>
+#include <webots/joystick.h>
 
 #include "control_arm_manual_webots.h"
 #include "rtwtypes.h"
@@ -21,8 +22,7 @@
 #define SAMPLE_PERIOD 10
 
 int main(int argc, char **argv){
-    (void)argc;
-    (void)argv;
+    (void)argc; (void)argv;
     /* necessary to initialize webots stuff */
     wb_robot_init();
 
@@ -36,10 +36,10 @@ int main(int argc, char **argv){
     WbDeviceTag gripperPitchMotor    = wb_robot_get_device("gripper_pitch_motor");
     WbDeviceTag gripperRotationMotor = wb_robot_get_device("gripper_rotation_motor");
 
-    WbDeviceTag topJawsMotor = wb_robot_get_device("top_jaw_motor");
+    WbDeviceTag topJawsMotor    = wb_robot_get_device("top_jaw_motor");
     WbDeviceTag bottomJawsMotor = wb_robot_get_device("bottom_jaw_motor");
-    WbDeviceTag leftJawsMotor = wb_robot_get_device("left_jaw_motor");
-    WbDeviceTag rightJawsMotor = wb_robot_get_device("right_jaw_motor");
+    WbDeviceTag leftJawsMotor   = wb_robot_get_device("left_jaw_motor");
+    WbDeviceTag rightJawsMotor  = wb_robot_get_device("right_jaw_motor");
     printf("initialized motor device tags\n");
 
     //setting tags for 
@@ -51,35 +51,25 @@ int main(int argc, char **argv){
     printf("initialized rotation sensor device tags\n");
 
     //enabling the position sensors
-    wb_position_sensor_enable(baseRotationSensor, SAMPLE_PERIOD);
-    wb_position_sensor_enable(baseRightSensor, SAMPLE_PERIOD);
-    wb_position_sensor_enable(baseLeftSensor, SAMPLE_PERIOD);
-    wb_position_sensor_enable(gripperPitchSensor, SAMPLE_PERIOD);
+    wb_position_sensor_enable(baseRotationSensor,    SAMPLE_PERIOD);
+    wb_position_sensor_enable(baseRightSensor,       SAMPLE_PERIOD);
+    wb_position_sensor_enable(baseLeftSensor,        SAMPLE_PERIOD);
+    wb_position_sensor_enable(gripperPitchSensor,    SAMPLE_PERIOD);
     wb_position_sensor_enable(gripperRotationSensor, SAMPLE_PERIOD);
-    printf("enabled position sensors\n");
+    printf("enabled position sensors with %dms sample period\n", SAMPLE_PERIOD);
 
     //setting speed to max for fast responses
-    wb_motor_set_position(baseRotationMotor,    0);
-    wb_motor_set_velocity(baseRotationMotor,    1);
-    wb_motor_set_position(baseRightMotor,       0);
-    wb_motor_set_velocity(baseRightMotor,       1);
-    wb_motor_set_position(baseLeftMotor,        0);
-    wb_motor_set_velocity(baseLeftMotor,        1);
-    wb_motor_set_position(gripperPitchMotor,    0);
-    wb_motor_set_velocity(gripperPitchMotor,    1);
-    wb_motor_set_position(gripperRotationMotor, 0);
-    wb_motor_set_velocity(gripperRotationMotor, 1);
+    wb_motor_set_position(baseRotationMotor,    0); wb_motor_set_velocity(baseRotationMotor,    1);
+    wb_motor_set_position(baseRightMotor,       0); wb_motor_set_velocity(baseRightMotor,       1);
+    wb_motor_set_position(baseLeftMotor,        0); wb_motor_set_velocity(baseLeftMotor,        1);
+    wb_motor_set_position(gripperPitchMotor,    0); wb_motor_set_velocity(gripperPitchMotor,    1);
+    wb_motor_set_position(gripperRotationMotor, 0); wb_motor_set_velocity(gripperRotationMotor, 1);
 
-    wb_motor_set_position(topJawsMotor,    0);
-    wb_motor_set_velocity(topJawsMotor,    1);
-    wb_motor_set_position(bottomJawsMotor, 0);
-    wb_motor_set_velocity(bottomJawsMotor, 1);
-    wb_motor_set_position(leftJawsMotor,   0);
-    wb_motor_set_velocity(leftJawsMotor,   1);
-    wb_motor_set_position(rightJawsMotor,  0);
-    wb_motor_set_velocity(rightJawsMotor,  1);
-
-    printf("initialized motor positions\n");
+    wb_motor_set_position(topJawsMotor,    0); wb_motor_set_velocity(topJawsMotor,    1);
+    wb_motor_set_position(bottomJawsMotor, 0); wb_motor_set_velocity(bottomJawsMotor, 1);
+    wb_motor_set_position(leftJawsMotor,   0); wb_motor_set_velocity(leftJawsMotor,   1);
+    wb_motor_set_position(rightJawsMotor,  0); wb_motor_set_velocity(rightJawsMotor,  1);
+    printf("initialized motor positions and speeds to 0rad and 1rad/s\n");
 
     //positioning variables
     real_T x          = 0.5;
@@ -105,48 +95,65 @@ int main(int argc, char **argv){
 
     //enableing manual control
     wb_keyboard_enable(SAMPLE_PERIOD);
+    wb_joystick_enable(SAMPLE_PERIOD);
 
+    //main program loop
     while(wb_robot_step(TIME_STEP) != -1){
-        int key = wb_keyboard_get_key();
-        switch(key){
-        case 87://W
-            x += deltaX;
-            break;
-        case 83://S
-            x -= deltaX;
-            break;
-        case 65://A
-            y += deltaY;
-            break;
-        case 68://D
-            y -= deltaY;
-            break;
-        case 69://E
-            z += deltaZ;
-            break;
-        case 81://Q
-            z -= deltaZ;
-            break;
-        case WB_KEYBOARD_UP:
-            gripperAng += 2;
-            break;
-        case WB_KEYBOARD_DOWN:
-            gripperAng -= 2;
-            break;
-        case WB_KEYBOARD_LEFT:
-            gripperRotationDesPos -= 4;
-            break;
-        case WB_KEYBOARD_RIGHT:
-            gripperRotationDesPos += 4;
-            break;
-        case 82://R
-            gripperJawsDesPos += 0.02;
-            break;
-        case 70://F
-            gripperJawsDesPos -= 0.02;
-            break;
-        default:
-            break;
+        //processing keyboard control
+        switch(wb_keyboard_get_key()){
+            //positioning controls
+            case 87://W
+                x += deltaX;
+                break;
+            case 83://S
+                x -= deltaX;
+                break;
+            case 65://A
+                y += deltaY;
+                break;
+            case 68://D
+                y -= deltaY;
+                break;
+            case 69://E
+                z += deltaZ;
+                break;
+            case 81://Q
+                z -= deltaZ;
+                break;
+            //gripper angle controls
+            case WB_KEYBOARD_UP:
+                gripperAng += 2;
+                break;
+            case WB_KEYBOARD_DOWN:
+                gripperAng -= 2;
+                break;
+            //gripper rotation controls
+            case WB_KEYBOARD_LEFT:
+                gripperRotationDesPos -= 4;
+                break;
+            case WB_KEYBOARD_RIGHT:
+                gripperRotationDesPos += 4;
+                break;
+            //gripper opening/closing controls
+            case 82://R
+                gripperJawsDesPos += 0.02;
+                break;
+            case 70://F
+                gripperJawsDesPos -= 0.02;
+                break;
+            default:
+                break;
+        }
+
+        //processing joystick controls
+        //TODO
+        if(wb_joystick_is_connected()){
+            printf("%s\n", wb_joystick_get_model());
+        }
+        else{
+            wb_joystick_disable();
+            wb_joystick_enable(SAMPLE_PERIOD);
+            printf("no joystick connected\n");
         }
 
         //reading sensors
@@ -180,20 +187,26 @@ int main(int argc, char **argv){
         wb_motor_set_position(gripperPitchMotor,    rtY.controlGripperPitch);
         wb_motor_set_position(gripperRotationMotor, rtY.controlWristRotation);
 
+        wb_motor_set_position(topJawsMotor,    gripperJawsDesPos);
+        wb_motor_set_position(bottomJawsMotor, gripperJawsDesPos);
+        wb_motor_set_position(leftJawsMotor,   gripperJawsDesPos);
+        wb_motor_set_position(rightJawsMotor,  gripperJawsDesPos);
+
+        /* debugging messages
         printf("angles : %f %f %f %f %f\n", rtY.controlBase, rtY.controlStepperRight, rtY.controlStepperLeft, rtY.controlGripperPitch, rtY.controlWristRotation);
         printf("test : %f\n", rtY.testProbe);
+        */
 
-        wb_motor_set_position(topJawsMotor, gripperJawsDesPos);
-        wb_motor_set_position(bottomJawsMotor, gripperJawsDesPos);
-        wb_motor_set_position(leftJawsMotor, gripperJawsDesPos);
-        wb_motor_set_position(rightJawsMotor, gripperJawsDesPos);
-
-        //printf("desired position : [%f, %f, %f] actual position : [%f, %f, %f]\n", x, y, z, rtY.actualX, rtY.actualY, rtY.actualZ);
+        //sending info about positioning
+        printf("desired position : [%f, %f, %f] actual position : [%f, %f, %f]\n", x, y, z, rtY.actualX, rtY.actualY, rtY.actualZ);
     };
+
+    //disalbing manual control
+    wb_keyboard_disable();
+    wb_joystick_disable();
 
     /* This is necessary to cleanup webots resources */
     wb_robot_cleanup();
-    wb_keyboard_disable();
 
     return 0;
 }

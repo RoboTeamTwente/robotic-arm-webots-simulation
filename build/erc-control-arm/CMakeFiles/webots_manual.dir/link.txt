@@ -1,2 +1,0 @@
-/usr/bin/ar qc libwebots_manual.a CMakeFiles/webots_manual.dir/control_arm_manual_webots_ert_rtw/control_arm_manual_webots.c.o
-/usr/bin/ranlib libwebots_manual.a
