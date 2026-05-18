@@ -26,3 +26,6 @@ For webots to recognize the controller, there also needs to be a simlink to the 
 ```
 ln -s ./build/my_arm_controller ./robotic-arm-webots-simulation
 ```
+The controller program should be the same name as the root directory
+
+After imporing the proto into your world file, the controller can be added to the root robot node of the robotic arm.
