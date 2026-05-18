@@ -7,6 +7,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <webots/robot.h>
 #include <webots/motor.h>
@@ -58,7 +59,7 @@ int main(int argc, char **argv){
     wb_position_sensor_enable(gripperRotationSensor, SAMPLE_PERIOD);
     printf("enabled position sensors with %dms sample period\n", SAMPLE_PERIOD);
 
-    //setting speed to max for fast responses
+    //initializing positions, and setting velocities to 1
     wb_motor_set_position(baseRotationMotor,    0); wb_motor_set_velocity(baseRotationMotor,    1);
     wb_motor_set_position(baseRightMotor,       0); wb_motor_set_velocity(baseRightMotor,       1);
     wb_motor_set_position(baseLeftMotor,        0); wb_motor_set_velocity(baseLeftMotor,        1);
@@ -89,9 +90,9 @@ int main(int argc, char **argv){
 
     real_T gripperJawsDesPos = 0;
 
-    float deltaX = 0.005;
-    float deltaY = 0.005;
-    float deltaZ = 0.005;
+    double deltaX = 0.005;
+    double deltaY = 0.005;
+    double deltaZ = 0.005;
 
     //enableing manual control
     wb_keyboard_enable(SAMPLE_PERIOD);
@@ -102,58 +103,55 @@ int main(int argc, char **argv){
         //processing keyboard control
         switch(wb_keyboard_get_key()){
             //positioning controls
-            case 87://W
-                x += deltaX;
-                break;
-            case 83://S
-                x -= deltaX;
-                break;
-            case 65://A
-                y += deltaY;
-                break;
-            case 68://D
-                y -= deltaY;
-                break;
-            case 69://E
-                z += deltaZ;
-                break;
-            case 81://Q
-                z -= deltaZ;
-                break;
+            case 87: x += deltaX; break; //W
+            case 83: x -= deltaX; break; //S
+            case 65: y += deltaY; break; //A
+            case 68: y -= deltaY; break; //D
+            case 69: z += deltaZ; break; //E
+            case 81: z -= deltaZ; break; //Q
             //gripper angle controls
-            case WB_KEYBOARD_UP:
-                gripperAng += 2;
-                break;
-            case WB_KEYBOARD_DOWN:
-                gripperAng -= 2;
-                break;
+            case WB_KEYBOARD_UP:   gripperAng += 2; break;
+            case WB_KEYBOARD_DOWN: gripperAng -= 2; break;
             //gripper rotation controls
-            case WB_KEYBOARD_LEFT:
-                gripperRotationDesPos -= 4;
-                break;
-            case WB_KEYBOARD_RIGHT:
-                gripperRotationDesPos += 4;
-                break;
+            case WB_KEYBOARD_LEFT:  gripperRotationDesPos -= 4; break;
+            case WB_KEYBOARD_RIGHT: gripperRotationDesPos += 4; break;
             //gripper opening/closing controls
-            case 82://R
-                gripperJawsDesPos += 0.02;
-                break;
-            case 70://F
-                gripperJawsDesPos -= 0.02;
-                break;
-            default:
-                break;
+            case 82: gripperJawsDesPos += 0.02; break; //R
+            case 70: gripperJawsDesPos -= 0.02; break; //F
+            default: break;
         }
 
         //processing joystick controls
-        //TODO
         if(wb_joystick_is_connected()){
-            printf("%s\n", wb_joystick_get_model());
+            int leftH   = wb_joystick_get_axis_value(0);
+            int leftV   = wb_joystick_get_axis_value(1);
+            int leftTr  = wb_joystick_get_axis_value(2);
+            int rightH  = wb_joystick_get_axis_value(3);
+            int rightV  = wb_joystick_get_axis_value(4);
+            int rightTr = wb_joystick_get_axis_value(5);
+            int dpad = wb_joystick_get_pov_value(0);
+            //left joystick
+            if(abs(leftV) > 10)  x -= ((float)leftV / 32768.0) * deltaX;
+            if(abs(leftH) > 10)  y -= ((float)leftH / 32768.0) * deltaY;
+            //right joystick
+            if(abs(rightV) > 10) z -= ((float)rightV / 32768.0) * deltaZ;
+            if(abs(rightH) > 10) gripperRotationDesPos -= ((float)rightH / 32768.0) * 4;
+            //triggers
+            if(rightTr > 0) gripperJawsDesPos += ((float)rightTr / 32768.0) * 0.02;
+            else if(leftTr > 0) gripperJawsDesPos -= ((float)leftTr / 32768.0) * 0.02;
+            //dpad
+            switch(dpad){
+                case 1:    gripperAng += 2; break; //up
+                case 16:   gripperAng -= 2; break; //down
+                case 256:  break; //right
+                case 4096: break; //left
+                default: break;
+            }
         }
+        //reconnect if nothing is connected
         else{
             wb_joystick_disable();
             wb_joystick_enable(SAMPLE_PERIOD);
-            printf("no joystick connected\n");
         }
 
         //reading sensors
@@ -191,11 +189,6 @@ int main(int argc, char **argv){
         wb_motor_set_position(bottomJawsMotor, gripperJawsDesPos);
         wb_motor_set_position(leftJawsMotor,   gripperJawsDesPos);
         wb_motor_set_position(rightJawsMotor,  gripperJawsDesPos);
-
-        /* debugging messages
-        printf("angles : %f %f %f %f %f\n", rtY.controlBase, rtY.controlStepperRight, rtY.controlStepperLeft, rtY.controlGripperPitch, rtY.controlWristRotation);
-        printf("test : %f\n", rtY.testProbe);
-        */
 
         //sending info about positioning
         printf("desired position : [%f, %f, %f] actual position : [%f, %f, %f]\n", x, y, z, rtY.actualX, rtY.actualY, rtY.actualZ);
