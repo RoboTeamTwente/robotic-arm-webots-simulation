@@ -102,7 +102,7 @@ Robot {
                           }
                         }
                       ]
-                      name "solid(3)"
+                      name "solid"
                       boundingObject Mesh {
                         url [
                           "../libraries/robotic_arm_model/RA_bottom_sandwich_left.obj"
@@ -126,7 +126,7 @@ Robot {
                           }
                         }
                       ]
-                      name "solid(2)"
+                      name "solid"
                       boundingObject Mesh {
                         url [
                           "../libraries/robotic_arm_model/RA_bottom_sandwich_right.obj"
@@ -137,7 +137,7 @@ Robot {
                       }
                     }
                   ]
-                  name "solid(2)"
+                  name "solid"
                   physics Physics {
                   }
                 }
@@ -152,7 +152,7 @@ Robot {
                 }
               }
             ]
-            name "solid(1)"
+            name "solid"
             boundingObject Mesh {
               url [
                 "../libraries/robotic_arm_model/RA_base_plate_right.obj"
@@ -208,7 +208,7 @@ Robot {
                           }
                         }
                       ]
-                      name "solid(1)"
+                      name "solid"
                     }
                     HingeJoint {
                       jointParameters HingeJointParameters {
@@ -231,7 +231,7 @@ Robot {
                                 }
                               }
                             ]
-                            name "solid(1)"
+                            name "solid"
                           }
                           HingeJoint {
                             jointParameters HingeJointParameters {
@@ -254,7 +254,7 @@ Robot {
                                       }
                                     }
                                   ]
-                                  name "solid(4)"
+                                  name "solid"
                                 }
                                 Solid {
                                   translation 0.041 -0.12 0
@@ -269,7 +269,7 @@ Robot {
                                       }
                                     }
                                   ]
-                                  name "solid(3)"
+                                  name "solid"
                                 }
                                 HingeJoint {
                                   jointParameters HingeJointParameters {
@@ -349,7 +349,7 @@ Robot {
                                                     }
                                                   }
                                                 ]
-                                                name "solid(1)"
+                                                name "solid"
                                                 boundingObject Mesh {
                                                   url [
                                                     "../libraries/robotic_arm_model/gripper_jaw.obj"
@@ -386,7 +386,7 @@ Robot {
                                                     }
                                                   }
                                                 ]
-                                                name "solid(2)"
+                                                name "solid"
                                                 boundingObject Mesh {
                                                   url [
                                                     "../libraries/robotic_arm_model/gripper_jaw.obj"
@@ -422,7 +422,7 @@ Robot {
                                                     }
                                                   }
                                                 ]
-                                                name "solid(3)"
+                                                name "solid"
                                                 boundingObject Mesh {
                                                   url [
                                                     "../libraries/robotic_arm_model/gripper_jaw.obj"
@@ -488,7 +488,7 @@ Robot {
                                         }
                                       }
                                     ]
-                                    name "solid(2)"
+                                    name "solid"
                                     boundingObject Mesh {
                                       url [
                                         "../libraries/robotic_arm_model/gripper_base.obj"
@@ -514,7 +514,7 @@ Robot {
                                       }
                                     }
                                   ]
-                                  name "solid(1)"
+                                  name "solid"
                                   boundingObject Mesh {
                                     url [
                                       "../libraries/robotic_arm_model/RA_top_sandwich_right.obj"
@@ -585,7 +585,7 @@ Robot {
                       }
                     }
                   ]
-                  name "solid(1)"
+                  name "solid"
                   boundingObject Mesh {
                     url [
                       "../libraries/robotic_arm_model/RA_short_linkage.obj"
