@@ -16,7 +16,7 @@
 #include <webots/keyboard.h>
 #include <webots/joystick.h>
 
-#include "control_arm_manual_webots.h"
+#include "control_arm_webots.h"
 #include "rtwtypes.h"
 
 #define TIME_STEP 64
@@ -28,7 +28,7 @@ int main(int argc, char **argv){
     wb_robot_init();
 
     //initializing control system
-    control_arm_manual_webots_initialize();
+    control_arm_webots_initialize();
 
     //setting tags for motors
     WbDeviceTag baseRotationMotor    = wb_robot_get_device("base_rotation_motor");
@@ -90,70 +90,16 @@ int main(int argc, char **argv){
 
     real_T gripperJawsDesPos = 0;
 
-    double deltaX = 0.005;
-    double deltaY = 0.005;
-    double deltaZ = 0.005;
-
-    //enableing manual control
-    wb_keyboard_enable(SAMPLE_PERIOD);
-    wb_joystick_enable(SAMPLE_PERIOD);
+    //waiting untill the sensors read out values
+    do{
+        rtU.baseOldPosition         = wb_position_sensor_get_value(baseRotationSensor);
+        rtU.stepperLeftOldPosition  = wb_position_sensor_get_value(baseRightSensor);
+        rtU.stepperRightOldPosition = wb_position_sensor_get_value(baseLeftSensor);
+        rtU.gripperPitchOldPosition = wb_position_sensor_get_value(gripperPitchSensor);
+    }while(isnan(rtU.baseOldPosition));
 
     //main program loop
     while(wb_robot_step(TIME_STEP) != -1){
-        //processing keyboard control
-        switch(wb_keyboard_get_key()){
-            //positioning controls
-            case 87: x += deltaX; break; //W
-            case 83: x -= deltaX; break; //S
-            case 65: y += deltaY; break; //A
-            case 68: y -= deltaY; break; //D
-            case 69: z += deltaZ; break; //E
-            case 81: z -= deltaZ; break; //Q
-            //gripper angle controls
-            case WB_KEYBOARD_UP:   gripperAng += 2; break;
-            case WB_KEYBOARD_DOWN: gripperAng -= 2; break;
-            //gripper rotation controls
-            case WB_KEYBOARD_LEFT:  gripperRotationDesPos -= 4; break;
-            case WB_KEYBOARD_RIGHT: gripperRotationDesPos += 4; break;
-            //gripper opening/closing controls
-            case 82: gripperJawsDesPos += 0.02; break; //R
-            case 70: gripperJawsDesPos -= 0.02; break; //F
-            default: break;
-        }
-
-        //processing joystick controls
-        if(wb_joystick_is_connected()){
-            int leftH   = wb_joystick_get_axis_value(0);
-            int leftV   = wb_joystick_get_axis_value(1);
-            int leftTr  = wb_joystick_get_axis_value(2);
-            int rightH  = wb_joystick_get_axis_value(3);
-            int rightV  = wb_joystick_get_axis_value(4);
-            int rightTr = wb_joystick_get_axis_value(5);
-            int dpad = wb_joystick_get_pov_value(0);
-            //left joystick
-            if(abs(leftV) > 10)  x -= ((float)leftV / 32768.0) * deltaX;
-            if(abs(leftH) > 10)  y -= ((float)leftH / 32768.0) * deltaY;
-            //right joystick
-            if(abs(rightV) > 10) z -= ((float)rightV / 32768.0) * deltaZ;
-            if(abs(rightH) > 10) gripperRotationDesPos -= ((float)rightH / 32768.0) * 4;
-            //triggers
-            if(rightTr > 0) gripperJawsDesPos += ((float)rightTr / 32768.0) * 0.02;
-            else if(leftTr > 0) gripperJawsDesPos -= ((float)leftTr / 32768.0) * 0.02;
-            //dpad
-            switch(dpad){
-                case 1:    gripperAng += 2; break; //up
-                case 16:   gripperAng -= 2; break; //down
-                case 256:  break; //right
-                case 4096: break; //left
-                default: break;
-            }
-        }
-        //reconnect if nothing is connected
-        else{
-            wb_joystick_disable();
-            wb_joystick_enable(SAMPLE_PERIOD);
-        }
-
         //reading sensors
         baseRotationActPos    = wb_position_sensor_get_value(baseRotationSensor);
         baseRightActPos       = wb_position_sensor_get_value(baseRightSensor);
@@ -166,17 +112,27 @@ int main(int argc, char **argv){
         rtU.y                              = y;
         rtU.z                              = z;
         rtU.gripperAng                     = gripperAng*(M_PI/180);
-        rtU.desiredposition                = jawDesPos;
-        rtU.gripperRotationDesiredPosition = gripperRotationDesPos*(M_PI/180);
-        rtU.actualposition                 = jawActPos;
+        rtU.jawDesiredPosition             = jawDesPos;
+        rtU.gripperRotationDesiredPosition = gripperRotationDesPos;
+        rtU.jawActualPosition              = jawActPos;
         rtU.gripperRotationActualPosition  = gripperRotationActPos;
         rtU.gripperPitchActualPosition     = gripperPitchActPos;
         rtU.baseActualPosition             = baseRotationActPos;
         rtU.stepperLeftActualPosition      = baseLeftActPos;
         rtU.stepperRightActualPosition     = baseRightActPos;
-        rtU.deltaTime                      = 0.001;
+        rtU.deltaTime                      = 0.1;//0.001;
 
-        control_arm_manual_webots_step();
+        control_arm_webots_step();
+
+        //checking if target point is reached
+        /*
+        if(rtY.pointReached){
+            rtU.baseOldPosition         = baseRotationActPos;
+            rtU.stepperLeftOldPosition  = baseLeftActPos;
+            rtU.stepperRightOldPosition = baseRightActPos;
+            rtU.gripperPitchOldPosition = gripperPitchActPos;
+        }
+        */
 
         //updating motor positions
         wb_motor_set_position(baseRotationMotor,    rtY.controlBase);
@@ -191,12 +147,8 @@ int main(int argc, char **argv){
         wb_motor_set_position(rightJawsMotor,  gripperJawsDesPos);
 
         //sending info about positioning
-        printf("desired position : [%f, %f, %f] actual position : [%f, %f, %f]\n", x, y, z, rtY.actualX, rtY.actualY, rtY.actualZ);
+        printf("desired position : [%f, %f, %f] actual position : [%f, %f, %f] reached point : [%d]\n", x, y, z, rtY.actualX, rtY.actualY, rtY.actualZ, rtY.pointReached);
     };
-
-    //disalbing manual control
-    wb_keyboard_disable();
-    wb_joystick_disable();
 
     /* This is necessary to cleanup webots resources */
     wb_robot_cleanup();
