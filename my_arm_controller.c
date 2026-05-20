@@ -166,9 +166,9 @@ int main(int argc, char **argv){
         rtU.y                              = y;
         rtU.z                              = z;
         rtU.gripperAng                     = gripperAng*(M_PI/180);
-        rtU.desiredposition                = jawDesPos;
+        rtU.jawDesiredPosition                = jawDesPos;
         rtU.gripperRotationDesiredPosition = gripperRotationDesPos*(M_PI/180);
-        rtU.actualposition                 = jawActPos;
+        rtU.jawActualPosition                 = jawActPos;
         rtU.gripperRotationActualPosition  = gripperRotationActPos;
         rtU.gripperPitchActualPosition     = gripperPitchActPos;
         rtU.baseActualPosition             = baseRotationActPos;
