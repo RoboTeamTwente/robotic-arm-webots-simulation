@@ -24,8 +24,10 @@
 
 int main(int argc, char **argv){
     (void)argc; (void)argv;
+    printf("before init\n");
     /* necessary to initialize webots stuff */
     wb_robot_init();
+    printf("after init\n");
 
     //initializing control system
     control_arm_webots_initialize();
@@ -91,12 +93,14 @@ int main(int argc, char **argv){
     real_T gripperJawsDesPos = 0;
 
     //waiting untill the sensors read out values
+    /*
     do{
         rtU.baseOldPosition         = wb_position_sensor_get_value(baseRotationSensor);
         rtU.stepperLeftOldPosition  = wb_position_sensor_get_value(baseRightSensor);
         rtU.stepperRightOldPosition = wb_position_sensor_get_value(baseLeftSensor);
         rtU.gripperPitchOldPosition = wb_position_sensor_get_value(gripperPitchSensor);
     }while(isnan(rtU.baseOldPosition));
+    */
 
     //main program loop
     while(wb_robot_step(TIME_STEP) != -1){
