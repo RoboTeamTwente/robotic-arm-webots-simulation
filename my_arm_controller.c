@@ -72,11 +72,11 @@ int main(int argc, char **argv){
     wb_motor_set_position(rightJawsMotor,  0); wb_motor_set_velocity(rightJawsMotor,  1);
     printf("initialized motor positions and speeds to 0rad and 1rad/s\n");
 
-    //positioning variables
-    real_T x          = 0.5;
-    real_T y          = 0.2;
-    real_T z          = 0;
-    real_T gripperAng = 90;
+    //positioning variables initialized to starting position
+    real_T x          = 0.795;
+    real_T y          = 0.0;
+    real_T z          = 0.322;
+    real_T gripperAng = 5.0;
 
     //initializing control variables
     real_T jawDesPos             = 0;
@@ -103,55 +103,57 @@ int main(int argc, char **argv){
         //processing keyboard control
         switch(wb_keyboard_get_key()){
             //positioning controls
-            case 87: x += deltaX; break; //W
-            case 83: x -= deltaX; break; //S
-            case 65: y += deltaY; break; //A
-            case 68: y -= deltaY; break; //D
-            case 69: z += deltaZ; break; //E
-            case 81: z -= deltaZ; break; //Q
+            case 87: x += deltaX; break;//W
+            case 83: x -= deltaX; break;//S
+            case 65: y += deltaY; break;//A
+            case 68: y -= deltaY; break;//D
+            case 69: z += deltaZ; break;//E
+            case 81: z -= deltaZ; break;//Q
             //gripper angle controls
-            case WB_KEYBOARD_UP:   gripperAng += 2; break;
-            case WB_KEYBOARD_DOWN: gripperAng -= 2; break;
+            case WB_KEYBOARD_UP:   gripperAng += 2; break;//up arrow
+            case WB_KEYBOARD_DOWN: gripperAng -= 2; break;//down arrow
             //gripper rotation controls
-            case WB_KEYBOARD_LEFT:  gripperRotationDesPos -= 4; break;
-            case WB_KEYBOARD_RIGHT: gripperRotationDesPos += 4; break;
+            case WB_KEYBOARD_LEFT:  gripperRotationDesPos += 4; break;//left arrow
+            case WB_KEYBOARD_RIGHT: gripperRotationDesPos -= 4; break;//right arrow
             //gripper opening/closing controls
-            case 82: gripperJawsDesPos += 0.02; break; //R
-            case 70: gripperJawsDesPos -= 0.02; break; //F
+            case 82: gripperJawsDesPos += 0.02; break;//R
+            case 70: gripperJawsDesPos -= 0.02; break;//F
             default: break;
         }
 
-        //processing joystick controls
-        if(wb_joystick_is_connected()){
-            int leftH   = wb_joystick_get_axis_value(0);
-            int leftV   = wb_joystick_get_axis_value(1);
-            int leftTr  = wb_joystick_get_axis_value(2);
-            int rightH  = wb_joystick_get_axis_value(3);
-            int rightV  = wb_joystick_get_axis_value(4);
-            int rightTr = wb_joystick_get_axis_value(5);
-            int dpad = wb_joystick_get_pov_value(0);
-            //left joystick
-            if(abs(leftV) > 10)  x -= ((float)leftV / 32768.0) * deltaX;
-            if(abs(leftH) > 10)  y -= ((float)leftH / 32768.0) * deltaY;
-            //right joystick
-            if(abs(rightV) > 10) z -= ((float)rightV / 32768.0) * deltaZ;
-            if(abs(rightH) > 10) gripperRotationDesPos -= ((float)rightH / 32768.0) * 4;
-            //triggers
-            if(rightTr > 0) gripperJawsDesPos += ((float)rightTr / 32768.0) * 0.02;
-            else if(leftTr > 0) gripperJawsDesPos -= ((float)leftTr / 32768.0) * 0.02;
-            //dpad
-            switch(dpad){
-                case 1:    gripperAng += 2; break; //up
-                case 16:   gripperAng -= 2; break; //down
-                case 256:  break; //right
-                case 4096: break; //left
-                default: break;
+        //processing joystick controls if a joystick is enabled
+        if(wb_joystick_get_sampling_period() != 0){
+            //processing joystick controls if a joystick is connected
+            if(wb_joystick_is_connected()){
+                int leftH   = wb_joystick_get_axis_value(0);
+                int leftV   = wb_joystick_get_axis_value(1);
+                int leftTr  = wb_joystick_get_axis_value(2);
+                int rightH  = wb_joystick_get_axis_value(3);
+                int rightV  = wb_joystick_get_axis_value(4);
+                int rightTr = wb_joystick_get_axis_value(5);
+                int dpad    = wb_joystick_get_pov_value(0);
+                //left joystick
+                if(abs(leftV) > 10)  x -= ((float)leftV / 32768.0) * deltaX;
+                if(abs(leftH) > 10)  y -= ((float)leftH / 32768.0) * deltaY;
+                //right joystick
+                if(abs(rightV) > 10) z -= ((float)rightV / 32768.0) * deltaZ;
+                if(abs(rightH) > 10) gripperRotationDesPos -= ((float)rightH / 32768.0) * 4;
+                //triggers
+                if(rightTr > 0) gripperJawsDesPos += ((float)rightTr / 32768.0) * 0.02;
+                else if(leftTr > 0) gripperJawsDesPos -= ((float)leftTr / 32768.0) * 0.02;
+                //dpad
+                switch(dpad){
+                    case 1:    gripperAng += 2; break; //up
+                    case 16:   gripperAng -= 2; break; //down
+                    case 256:  break; //right
+                    case 4096: break; //left
+                    default: break;
+                }
             }
-        }
-        //reconnect if nothing is connected
-        else{
-            wb_joystick_disable();
-            wb_joystick_enable(SAMPLE_PERIOD);
+            //disableing if nothing is connected
+            else{
+                wb_joystick_disable();
+            }
         }
 
         //reading sensors
@@ -166,15 +168,15 @@ int main(int argc, char **argv){
         rtU.y                              = y;
         rtU.z                              = z;
         rtU.gripperAng                     = gripperAng*(M_PI/180);
-        rtU.jawDesiredPosition                = jawDesPos;
+        rtU.jawDesiredPosition             = jawDesPos;
         rtU.gripperRotationDesiredPosition = gripperRotationDesPos*(M_PI/180);
-        rtU.jawActualPosition                 = jawActPos;
+        rtU.jawActualPosition              = jawActPos;
         rtU.gripperRotationActualPosition  = gripperRotationActPos;
         rtU.gripperPitchActualPosition     = gripperPitchActPos;
         rtU.baseActualPosition             = baseRotationActPos;
         rtU.stepperLeftActualPosition      = baseLeftActPos;
         rtU.stepperRightActualPosition     = baseRightActPos;
-        rtU.deltaTime                      = 0.001;
+        rtU.deltaTime                      = TIME_STEP * 0.001;//TIME_STEP is in milliseconds
 
         control_arm_manual_webots_step();
 
