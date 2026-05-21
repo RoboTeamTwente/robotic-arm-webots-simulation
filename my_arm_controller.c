@@ -24,10 +24,8 @@
 
 int main(int argc, char **argv){
     (void)argc; (void)argv;
-    printf("before init\n");
     /* necessary to initialize webots stuff */
     wb_robot_init();
-    printf("after init\n");
 
     //initializing control system
     control_arm_webots_initialize();
@@ -117,14 +115,14 @@ int main(int argc, char **argv){
         rtU.z                              = z;
         rtU.gripperAng                     = gripperAng*(M_PI/180);
         rtU.jawDesiredPosition             = jawDesPos;
-        rtU.gripperRotationDesiredPosition = gripperRotationDesPos;
+        rtU.gripperRotationDesiredPosition = gripperRotationDesPos*(M_PI/180);
         rtU.jawActualPosition              = jawActPos;
         rtU.gripperRotationActualPosition  = gripperRotationActPos;
         rtU.gripperPitchActualPosition     = gripperPitchActPos;
         rtU.baseActualPosition             = baseRotationActPos;
         rtU.stepperLeftActualPosition      = baseLeftActPos;
         rtU.stepperRightActualPosition     = baseRightActPos;
-        rtU.deltaTime                      = 0.1;//0.001;
+        rtU.deltaTime                      = TIME_STEP * 0.001;//TIME_STEP is in milliseconds
 
         control_arm_webots_step();
 
