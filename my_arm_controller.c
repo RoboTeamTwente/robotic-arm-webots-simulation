@@ -193,7 +193,7 @@ int main(int argc, char **argv){
         wb_motor_set_position(rightJawsMotor,  gripperJawsDesPos);
 
         //sending info about positioning
-        printf("desired position : [%f, %f, %f] actual position : [%f, %f, %f]\n", x, y, z, rtY.actualX, rtY.actualY, rtY.actualZ);
+        printf("desired position : [%.3f, %.3f, %.3f] actual position : [%.3f, %.3f, %.3f] test : [%f]\n", x, y, z, rtY.actualX, rtY.actualY, rtY.actualZ, rtY.test);
     };
 
     //disalbing manual control
