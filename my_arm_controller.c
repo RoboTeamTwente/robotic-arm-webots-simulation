@@ -74,8 +74,8 @@ int main(int argc, char **argv){
 
     //positioning variables
     real_T x          = 0.5;
-    real_T y          = 0.2;
-    real_T z          = 0;
+    real_T y          = 0.0;
+    real_T z          = 0.0;
     real_T gripperAng = 90;
 
     //initializing control variables
@@ -90,18 +90,23 @@ int main(int argc, char **argv){
 
     real_T gripperJawsDesPos = 0;
 
-    //waiting untill the sensors read out values
-    /*
-    do{
-        rtU.baseOldPosition         = wb_position_sensor_get_value(baseRotationSensor);
-        rtU.stepperLeftOldPosition  = wb_position_sensor_get_value(baseRightSensor);
-        rtU.stepperRightOldPosition = wb_position_sensor_get_value(baseLeftSensor);
-        rtU.gripperPitchOldPosition = wb_position_sensor_get_value(gripperPitchSensor);
-    }while(isnan(rtU.baseOldPosition));
-    */
+    int currentPoint = 0;
+    double Xs[] = {0.4, 0.4, 0.7};
+    double Ys[] = {0.0, 0.4, 0.0};
+    double Zs[] = {0.0, 0.0, 0.0}; 
+
+    rtU.baseOldPosition = wb_position_sensor_get_value(baseRotationSensor);
 
     //main program loop
     while(wb_robot_step(TIME_STEP) != -1){
+        //waiting untill the sensors read out values
+        while(isnan(rtU.baseOldPosition)){
+            rtU.baseOldPosition         = wb_position_sensor_get_value(baseRotationSensor);
+            rtU.stepperLeftOldPosition  = wb_position_sensor_get_value(baseRightSensor);
+            rtU.stepperRightOldPosition = wb_position_sensor_get_value(baseLeftSensor);
+            rtU.gripperPitchOldPosition = wb_position_sensor_get_value(gripperPitchSensor);
+        }
+
         //reading sensors
         baseRotationActPos    = wb_position_sensor_get_value(baseRotationSensor);
         baseRightActPos       = wb_position_sensor_get_value(baseRightSensor);
@@ -123,18 +128,25 @@ int main(int argc, char **argv){
         rtU.stepperLeftActualPosition      = baseLeftActPos;
         rtU.stepperRightActualPosition     = baseRightActPos;
         rtU.deltaTime                      = TIME_STEP * 0.001;//TIME_STEP is in milliseconds
+        rtU.timePerMovement                = 6.0;
 
         control_arm_webots_step();
 
         //checking if target point is reached
-        /*
+        //changing the to new position from input
         if(rtY.pointReached){
             rtU.baseOldPosition         = baseRotationActPos;
             rtU.stepperLeftOldPosition  = baseLeftActPos;
             rtU.stepperRightOldPosition = baseRightActPos;
             rtU.gripperPitchOldPosition = gripperPitchActPos;
+            x = Xs[currentPoint];
+            y = Ys[currentPoint];
+            z = Zs[currentPoint];
+            currentPoint += 1;
+            if(currentPoint == 3){
+                currentPoint = 0;
+            }
         }
-        */
 
         //updating motor positions
         wb_motor_set_position(baseRotationMotor,    rtY.controlBase);
@@ -149,7 +161,7 @@ int main(int argc, char **argv){
         wb_motor_set_position(rightJawsMotor,  gripperJawsDesPos);
 
         //sending info about positioning
-        printf("desired position : [%f, %f, %f] actual position : [%f, %f, %f] reached point : [%d]\n", x, y, z, rtY.actualX, rtY.actualY, rtY.actualZ, rtY.pointReached);
+        printf("desired position : [%.3f, %.3f, %.3f] actual position : [%.3f, %.3f, %.3f] reached point : [%.3d] old position : [%.3f, %.3f, %.3f, %.3f]\n", x, y, z, rtY.actualX, rtY.actualY, rtY.actualZ, rtY.pointReached, rtU.baseOldPosition, rtU.stepperLeftOldPosition, rtU.stepperRightOldPosition, rtU.gripperPitchOldPosition);
     };
 
     /* This is necessary to cleanup webots resources */
