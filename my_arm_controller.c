@@ -184,7 +184,7 @@ int main(int argc, char **argv){
         wb_motor_set_position(baseRotationMotor,    rtY.controlBase);
         wb_motor_set_position(baseRightMotor,       rtY.controlStepperRight);
         wb_motor_set_position(baseLeftMotor,        rtY.controlStepperLeft);
-        wb_motor_set_position(gripperPitchMotor,    rtY.controlGripperPitch);
+        wb_motor_set_position(gripperPitchMotor,   -rtY.controlGripperPitch);
         wb_motor_set_position(gripperRotationMotor, rtY.controlWristRotation);
 
         wb_motor_set_position(topJawsMotor,    gripperJawsDesPos);
