@@ -73,9 +73,9 @@ int main(int argc, char **argv){
     printf("initialized motor positions and speeds to 0rad and 1rad/s\n");
 
     //positioning variables
-    real_T x          = 0.5;
+    real_T x          = 0.50;
     real_T y          = 0.0;
-    real_T z          = 0.0;
+    real_T z          = 0.070;
     real_T gripperAng = 90;
 
     //initializing control variables
